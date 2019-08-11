@@ -1,5 +1,5 @@
 import loader from 'assemblyscript/lib/loader';
-import { loadImageDataFromURL, putPixelsIntoCanvas } from './image-utils';
+import { ImageLoader, ImageDisplayer } from './image-utils';
 
 const MODULE_PATH = 'wasm/untouched.wasm';
 const IMAGE_URL = 'public/images/silly.jpg';
@@ -7,9 +7,9 @@ const IMAGE_URL = 'public/images/silly.jpg';
 (async function run() {
   let imports = {};
   let module = await loader.instantiateStreaming(fetch(MODULE_PATH), imports);
-  let imageData = await loadImageDataFromURL(IMAGE_URL, true);
+  let imgLoader = new ImageLoader(IMAGE_URL, true);
+  let imageData = await imgLoader.load();
 
-  debugger;
   let pixelsRef = module.__retain(
     module.__allocArray(module.ID_UINT8_ARRAY, imageData.data)
   );
@@ -17,5 +17,10 @@ const IMAGE_URL = 'public/images/silly.jpg';
   module.invertImage(pixelsRef);
 
   let newPixels = new Uint8ClampedArray(module.__getArray(pixelsRef));
-  putPixelsIntoCanvas(newPixels, imageData.width, imageData.height);
+  let imageDisplayer = new ImageDisplayer(
+    newPixels,
+    imageData.width,
+    imageData.height
+  );
+  await imageDisplayer.drawIntoCanvas();
 })();
