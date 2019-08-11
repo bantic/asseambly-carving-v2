@@ -12,6 +12,28 @@ const IMAGE_URL = 'public/images/silly.jpg';
   let imgLoader = new ImageLoader(IMAGE_URL, true);
   let imageData = await imgLoader.load();
 
+  await invert32bit(imageData, module);
+  await invert8bit(imageData, module);
+})();
+
+async function invert8bit(imageData, module) {
+  let pixelsRef = allocArray(
+    module,
+    new Uint8ClampedArray(imageData.data.buffer)
+  );
+  module.invertImage8(pixelsRef);
+
+  let newPixels = new Uint8ClampedArray(module.__getArray(pixelsRef));
+  let imageDisplayer = new ImageDisplayer(
+    newPixels,
+    imageData.width,
+    imageData.height
+  );
+  await imageDisplayer.drawIntoCanvas();
+  module.__release(pixelsRef);
+}
+
+async function invert32bit(imageData, module) {
   let pixelsRef = allocArray(module, new Uint32Array(imageData.data.buffer));
   module.invertImage32(pixelsRef);
 
@@ -24,6 +46,5 @@ const IMAGE_URL = 'public/images/silly.jpg';
     imageData.height
   );
   await imageDisplayer.drawIntoCanvas();
-
   module.__release(pixelsRef);
-})();
+}

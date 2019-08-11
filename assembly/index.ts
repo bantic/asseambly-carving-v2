@@ -5,7 +5,7 @@ export const ID_Uint32Array = idof<Int32Array>();
 
 const FULL_ALPHA = 0xff000000;
 
-export function invertImage(pixels: Uint8Array): void {
+export function invertImage8(pixels: Uint8Array): void {
   trace('getting stuff', 1, pixels.length);
   for (let i = 0; i < pixels.length; i += 4) {
     pixels[i] = 255 - pixels[i];
