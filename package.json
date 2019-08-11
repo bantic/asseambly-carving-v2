@@ -8,20 +8,19 @@
     "assemblyscript": "github:AssemblyScript/assemblyscript",
     "http-server": "^0.11.1",
     "lodash": "^4.17.15",
+    "nodemon": "^1.19.1",
     "npm-run-all": "^4.1.5",
     "webpack": "^4.39.1",
     "webpack-cli": "^3.3.6"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "asbuild:untouched": "asc assembly/index.ts -b build/untouched.wasm -t build/untouched.wat --sourceMap --validate --debug --printrtti",
-    "asbuild:optimized": "asc assembly/index.ts -b build/optimized.wasm -t build/optimized.wat --sourceMap --validate --optimize",
-    "asbuild:cp": "mkdir -p dist/wasm && cp build/* dist/wasm/",
-    "asbuild": "run-s asbuild:untouched asbuild:cp",
+    "asbuild": "asc assembly/index.ts -b dist/wasm/untouched.wasm -t dist/wasm/untouched.wat --sourceMap --validate --debug --printrtti",
+    "asbuild:watch": "nodemon --watch assembly/ -e ts -x \"npm run asbuild\"",
     "build": "webpack",
     "build:watch": "webpack --watch",
     "serve": "http-server dist -c-1",
-    "start": "run-p build:watch serve"
+    "start": "run-p build:watch asbuild:watch serve"
   },
   "keywords": [],
   "author": "Cory Forsyth <cory.forsyth@gmail.com> (http://coryforsyth.com/)",
